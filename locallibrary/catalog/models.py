@@ -5,6 +5,8 @@ from django.db import models
 from django.urls import reverse  # To generate URLS by reversing URL patterns
 from django.db.models import UniqueConstraint
 from django.db.models.functions import Lower
+from django.conf import settings
+from datetime import date
 
 class Genre(models.Model):
     """Model representing a book genre (e.g. Science Fiction, Non Fiction)."""
@@ -95,6 +97,11 @@ class Book(models.Model):
         return ', '.join(genre.name for genre in self.genre.all()[:3])
 
     display_genre.short_description = 'Genre'
+
+    @property
+    def is_overdue(self):
+        """Determines if the book is overdue based on due date and current date."""
+        return bool(self.due_back and date.today() > self.due_back)
 
 
 import uuid  # Required for unique book instances
